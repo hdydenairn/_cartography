@@ -11,7 +11,7 @@ library(sf)
 library(tidyverse)
 
 # Fetch unemployment data from Eurostat
-unemp_data <- get_eurostat(dataset_code = "une_rt_a",
+unemp_data <- get_eurostat("une_rt_a",
                                 filters = list(geo = NULL,
                                                sex = "T",
                                                age = "TOTAL",
