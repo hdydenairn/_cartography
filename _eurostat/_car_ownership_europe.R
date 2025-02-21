@@ -62,7 +62,7 @@ showtext_auto()
 ggplot(data_merged) +
   geom_sf(aes(fill = values), color = "white") +
   scale_fill_viridis_c(
-    name = "Cars per 1000", option = "magma", na.value = "grey"
+    name = "Cars per 1000", option = "magma", na.value = "grey", direction = -1
   ) +  
   coord_sf(xlim = c(-25, 52), ylim = c(35, 72)) +  
   theme(
