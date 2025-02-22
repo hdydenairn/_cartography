@@ -62,7 +62,9 @@ showtext_auto()
 ggplot(data_merged) +
   geom_sf(aes(fill = values), color = "white") +
   scale_fill_viridis_c(
-    name = "Cars per 1000", option = "magma", na.value = "grey", direction = -1
+    name = "Cars per 1000", option = "magma", na.value = "grey", direction = -1,
+    limits = c(150, 850),  # Extend the legend range
+    breaks = seq(150, 850, by = 100)  # Set tick marks at intervals
   ) +  
   coord_sf(xlim = c(-25, 52), ylim = c(35, 72)) +  
   theme(
@@ -71,6 +73,9 @@ ggplot(data_merged) +
     plot.caption = element_text(hjust = 0.5, family = "econ", face = "italic"),
     legend.title = element_text(family = "econ"),
     legend.text = element_text(family = "econ"),
+    legend.ticks = element_line(size = 0.5),  # Adjust legend tick appearance
+    legend.ticks.length = unit(0.3, "cm"),  # Extend tick length slightly
+    legend.axis.line = element_line(size = 0.6, color = "black"),  # Add axis line to legend
     panel.background = element_rect(fill = "lightgrey"),
     plot.background = element_rect(fill = "lightgrey"),
     panel.grid = element_blank(),
@@ -106,7 +111,13 @@ highlight_text <- highlight_countries %>%
   pull(label) %>%
   paste(collapse = "\n")  # Combine them into a single string with line breaks
 
-# Plot
+# Create text annotation for top three countries
+top_text <- top_countries %>%
+  mutate(label = paste(iso_a2, ": ", values, " cars per 1000", sep="")) %>%
+  pull(label) %>%
+  paste(collapse = "\n")
+
+# Add white box background and text annotation
 ggplot(data_merged) +
   geom_sf(aes(fill = values), color = "white") +
   scale_fill_viridis_c(
@@ -133,8 +144,19 @@ ggplot(data_merged) +
     subtitle = "Data source: Eurostat",
     caption = "Visualization by hdydenairn.github.io"
   ) +
-  # Add a custom annotation box with country names and values, moved to bottom left
+  # Add a larger white rectangle for the annotation
   annotation_custom(
-    grob = grid::textGrob(highlight_text, gp = grid::gpar(fontsize = 10, family = "econ", fontface = "bold")),
-    xmin = -20, xmax = 10, ymin = 35, ymax = 50  # Position the box at the bottom left
+    grob = grid::rectGrob(
+      width = unit(1.8, "grobwidth", grid::textGrob(top_text)),  # Scale width based on text
+      height = unit(1.8, "grobheight", grid::textGrob(top_text)), # Scale height based on text
+      gp = grid::gpar(fill = "white", col = "black", lwd = 1.2)  # Slightly thicker border
+    ),
+    xmin = -22, xmax = 2, ymin = 33, ymax = 42
+  ) +
+  # Add text inside the white box
+  annotation_custom(
+    grob = grid::textGrob(
+      top_text, gp = grid::gpar(fontsize = 10, family = "econ", fontface = "bold")
+    ),
+    xmin = -20, xmax = 0, ymin = 34, ymax = 41
   )
