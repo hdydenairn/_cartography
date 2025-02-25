@@ -112,6 +112,15 @@ data_wide <- data_filtered %>%
 data_wide <- data_wide %>%
   mutate(pct_change = ((year_2022 - year_2017) / year_2017) * 100)
 
+# Categorize into bins
+data_wide <- data_wide %>%
+  mutate(pct_category = cut(
+    pct_change,
+    breaks = c(-10, 0, 10, 20, 30, 40, 50, 60),
+    labels = c("-10 to 0", "0 to 10", "10 to 20", "20 to 30", "30 to 40", "40 to 50", "50 to 60"),
+    include.lowest = TRUE
+  ))
+
 # Fix country codes
 data_wide <- data_wide %>%
   filter(geo != "EU27_2020") %>%
@@ -141,12 +150,24 @@ data_merged <- europe_map_extended %>%
 font_add_google("Lato", "econ")
 showtext_auto()
 
-# Plot the percentage change
+# Define colors for bins
+bin_colors <- c(
+  "-10 to 0" = "red",
+  "0 to 10" = "orange",
+  "10 to 20" = "yellow",
+  "20 to 30" = "lightgreen",
+  "30 to 40" = "green",
+  "40 to 50" = "blue",
+  "50 to 60" = "purple"
+)
+
+# Plot the categorized data
 ggplot(data_merged) +
-  geom_sf(aes(fill = pct_change), color = "white") +
-  scale_fill_gradient2(
-    name = "% Change", low = "red", mid = "white", high = "blue", 
-    midpoint = 0, na.value = "grey"
+  geom_sf(aes(fill = pct_category), color = "white") +
+  scale_fill_manual(
+    name = "% Change", 
+    values = bin_colors,
+    na.value = "grey"
   ) +
   coord_sf(xlim = c(-25, 52), ylim = c(35, 72)) +
   theme(
@@ -155,7 +176,7 @@ ggplot(data_merged) +
     plot.caption = element_text(hjust = 0.5, family = "econ", face = "italic"),
     legend.title = element_text(family = "econ"),
     legend.text = element_text(family = "econ"),
-    legend.position = c(0.85, 0.5),
+    legend.position = c(0.85, 0.6),
     panel.background = element_rect(fill = "lightgrey"),
     plot.background = element_rect(fill = "lightgrey"),
     panel.grid = element_blank(),
@@ -164,7 +185,7 @@ ggplot(data_merged) +
     axis.title = element_blank()
   ) +
   labs(
-    title = "Percentage Change in Car Ownership (2017-2022)",
-    subtitle = "Data source: Eurostat",
-    caption = "Visualization by hdydenairn.github.io"
+    title = "Car Ownership Change in Europe (2017-2022)",
+    subtitle = "Percentage Change in Cars per 1000 Inhabitants",
+    caption = "Data Source: Eurostat | Visualization by hdydenairn.github.io"
   )
