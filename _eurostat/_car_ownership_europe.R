@@ -15,6 +15,8 @@ cars <- search_eurostat("cars")
 # Get data on car ownership per thousand inhabitants
 road_eqs_carhab <- get_eurostat("road_eqs_carhab", time_format = "num")
 
+# Car Ownership 2022 ####
+
 # Filter data for the 2022
 data_filtered <- road_eqs_carhab %>%
   filter(TIME_PERIOD == 2022) %>%
@@ -58,7 +60,7 @@ data_merged$values[is.na(data_merged$values)] <- NA
 font_add_google("Lato", "econ")
 showtext_auto()
 
-# Basic Plot ####
+# Plot
 ggplot(data_merged) +
   geom_sf(aes(fill = values), color = "white") +
   scale_fill_viridis_c(
@@ -91,72 +93,78 @@ ggplot(data_merged) +
     caption = "Visualization by hdydenairn.github.io"
   )
 
-# Plot with Top-3 and Bottom-3 Country Values ####
 
-# Calculate top three and bottom three countries
-top_countries <- data_merged %>%
-  arrange(desc(values)) %>%
-  head(3)
+# Car Ownership Change 2017 - 2022 ####
 
-bottom_countries <- data_merged %>%
-  arrange(values) %>%
-  head(3)
+# Filter data for 2017 and 2022
+data_filtered <- road_eqs_carhab %>%
+  filter(TIME_PERIOD %in% c(2017, 2022)) %>%
+  select(geo, TIME_PERIOD, values)
 
-# Combine the two data frames for display
-highlight_countries <- bind_rows(top_countries, bottom_countries)
+# Convert 'values' to numeric
+data_filtered$values <- as.numeric(data_filtered$values)
 
-# Create a string to display the countries and their car ownership values
-highlight_text <- highlight_countries %>%
-  mutate(label = paste(iso_a2, ": ", values, " cars per 1000", sep="")) %>%
-  pull(label) %>%
-  paste(collapse = "\n")  # Combine them into a single string with line breaks
+# Transform data for easier calculation
+data_wide <- data_filtered %>%
+  pivot_wider(names_from = TIME_PERIOD, values_from = values, names_prefix = "year_")
 
-# Create text annotation for top three countries
-top_text <- top_countries %>%
-  mutate(label = paste(iso_a2, ": ", values, " cars per 1000", sep="")) %>%
-  pull(label) %>%
-  paste(collapse = "\n")
+# Calculate percentage change
+data_wide <- data_wide %>%
+  mutate(pct_change = ((year_2022 - year_2017) / year_2017) * 100)
 
-# Add white box background and text annotation
+# Fix country codes
+data_wide <- data_wide %>%
+  filter(geo != "EU27_2020") %>%
+  mutate(geo = case_when(
+    geo == "UK"  ~ "GB",
+    geo == "EL"  ~ "GR",
+    TRUE ~ geo
+  ))
+
+# Load Natural Earth countries shapefile
+world_map <- ne_countries(scale = "medium", returnclass = "sf")
+
+# Fix missing France entry
+world_map <- world_map %>%
+  mutate(iso_a2 = ifelse(iso_a2 == "-99", "FR", iso_a2))
+
+# Filter for Europe, Africa, and Asia
+europe_map_extended <- world_map %>%
+  filter(continent %in% c("Europe", "Africa", "Asia")) %>%
+  select(iso_a2, geometry)
+
+# Merge map with data
+data_merged <- europe_map_extended %>%
+  left_join(data_wide, by = c("iso_a2" = "geo"))
+
+# Add custom font
+font_add_google("Lato", "econ")
+showtext_auto()
+
+# Plot the percentage change
 ggplot(data_merged) +
-  geom_sf(aes(fill = values), color = "white") +
-  scale_fill_viridis_c(
-    name = "Cars per 1000", option = "magma", na.value = "grey"
-  ) +  
-  coord_sf(xlim = c(-25, 52), ylim = c(35, 72)) +  
+  geom_sf(aes(fill = pct_change), color = "white") +
+  scale_fill_gradient2(
+    name = "% Change", low = "red", mid = "white", high = "blue", 
+    midpoint = 0, na.value = "grey"
+  ) +
+  coord_sf(xlim = c(-25, 52), ylim = c(35, 72)) +
   theme(
     plot.title = element_text(hjust = 0.5, family = "econ", face = "bold"),
     plot.subtitle = element_text(hjust = 0.5, family = "econ"),
     plot.caption = element_text(hjust = 0.5, family = "econ", face = "italic"),
     legend.title = element_text(family = "econ"),
     legend.text = element_text(family = "econ"),
+    legend.position = c(0.85, 0.5),
     panel.background = element_rect(fill = "lightgrey"),
     plot.background = element_rect(fill = "lightgrey"),
     panel.grid = element_blank(),
     axis.text = element_blank(),
     axis.ticks = element_blank(),
-    axis.title = element_blank(),
-    legend.position = c(0.85, 0.5),  # Moves the legend higher
-    legend.box = "horizontal"
+    axis.title = element_blank()
   ) +
   labs(
-    title = paste("Car Ownership per 1000 People in Europe (", 2022, ")", sep=""),
+    title = "Percentage Change in Car Ownership (2017-2022)",
     subtitle = "Data source: Eurostat",
     caption = "Visualization by hdydenairn.github.io"
-  ) +
-  # Add a larger white rectangle for the annotation
-  annotation_custom(
-    grob = grid::rectGrob(
-      width = unit(1.8, "grobwidth", grid::textGrob(top_text)),  # Scale width based on text
-      height = unit(1.8, "grobheight", grid::textGrob(top_text)), # Scale height based on text
-      gp = grid::gpar(fill = "white", col = "black", lwd = 1.2)  # Slightly thicker border
-    ),
-    xmin = -22, xmax = 2, ymin = 33, ymax = 42
-  ) +
-  # Add text inside the white box
-  annotation_custom(
-    grob = grid::textGrob(
-      top_text, gp = grid::gpar(fontsize = 10, family = "econ", fontface = "bold")
-    ),
-    xmin = -20, xmax = 0, ymin = 34, ymax = 41
   )
