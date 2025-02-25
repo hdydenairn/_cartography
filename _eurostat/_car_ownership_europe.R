@@ -64,11 +64,11 @@ showtext_auto()
 ggplot(data_merged) +
   geom_sf(aes(fill = values), color = "white") +
   scale_fill_viridis_c(
-    name = "Cars per 1000", option = "magma", na.value = "grey", direction = -1,
+    name = "Cars", option = "magma", na.value = "grey", direction = -1,
     limits = c(150, 850),  # Extend the legend range
     breaks = seq(150, 850, by = 100)  # Set tick marks at intervals
   ) +  
-  coord_sf(xlim = c(-25, 52), ylim = c(35, 72)) +  
+  coord_sf(xlim = c(-25, 52), ylim = c(35, 72)) +
   theme(
     plot.title = element_text(hjust = 0.5, family = "econ", face = "bold"),
     plot.subtitle = element_text(hjust = 0.5, family = "econ"),
@@ -88,9 +88,9 @@ ggplot(data_merged) +
     legend.box = "horizontal"
   ) +
   labs(
-    title = paste("Car Ownership per 1000 People in Europe (", 2022, ")", sep=""),
-    subtitle = "Data source: Eurostat",
-    caption = "Visualization by hdydenairn.github.io"
+    title = "Car Ownership Change in Europe (2022)",
+    subtitle = "Number of Cars per 1000 Inhabitants",
+    caption = "Data Source: Eurostat | Visualization by hdydenairn.github.io"
   )
 
 
@@ -150,15 +150,15 @@ data_merged <- europe_map_extended %>%
 font_add_google("Lato", "econ")
 showtext_auto()
 
-# Define colors for bins
+# Define light blue for negative, and progressively darker reds for positive
 bin_colors <- c(
-  "-10 to 0" = "red",
-  "0 to 10" = "orange",
-  "10 to 20" = "yellow",
-  "20 to 30" = "lightgreen",
-  "30 to 40" = "green",
-  "40 to 50" = "blue",
-  "50 to 60" = "purple"
+  "-10 to 0" = "#99CCFF",  # Light blue for decline
+  "0 to 10" = "#FF9999",   # Light red (same lightness as blue)
+  "10 to 20" = "#FF6666",  # Medium red
+  "20 to 30" = "#FF4D4D",  # Darker red
+  "30 to 40" = "#FF3333",  # Even darker red
+  "40 to 50" = "#FF1A1A",  # Deep red
+  "50 to 60" = "#FF0000"   # Darkest red
 )
 
 # Plot the categorized data
