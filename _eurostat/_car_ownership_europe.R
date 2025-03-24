@@ -65,26 +65,26 @@ ggplot(data_merged) +
   geom_sf(aes(fill = values), color = "white") +
   scale_fill_viridis_c(
     name = "Cars", option = "magma", na.value = "grey", direction = -1,
-    limits = c(150, 850),  # Extend the legend range
-    breaks = seq(150, 850, by = 100)  # Set tick marks at intervals
+    limits = c(150, 850),
+    breaks = seq(150, 850, by = 100)
   ) +  
   coord_sf(xlim = c(-25, 52), ylim = c(35, 72)) +
   theme(
-    plot.title = element_text(hjust = 0.5, family = "econ", face = "bold"),
-    plot.subtitle = element_text(hjust = 0.5, family = "econ"),
-    plot.caption = element_text(hjust = 0.5, family = "econ", face = "italic"),
-    legend.title = element_text(family = "econ"),
-    legend.text = element_text(family = "econ"),
-    legend.ticks = element_line(size = 0.5),  # Adjust legend tick appearance
-    legend.ticks.length = unit(0.3, "cm"),  # Extend tick length slightly
-    legend.axis.line = element_line(size = 0.6, color = "black"),  # Add axis line to legend
+    plot.title = element_text(hjust = 0.5, family = "econ", face = "bold", size = 60),
+    plot.subtitle = element_text(hjust = 0.5, family = "econ", size = 45),
+    plot.caption = element_text(hjust = 0.5, family = "econ", face = "italic", size = 35),
+    legend.title = element_text(family = "econ", size = 40),
+    legend.text = element_text(family = "econ", size = 35),
+    legend.ticks = element_line(size = 1),
+    legend.ticks.length = unit(0.6, "cm"),
+    legend.axis.line = element_line(size = 1.2, color = "black"),
     panel.background = element_rect(fill = "lightgrey"),
     plot.background = element_rect(fill = "lightgrey"),
     panel.grid = element_blank(),
     axis.text = element_blank(),
     axis.ticks = element_blank(),
     axis.title = element_blank(),
-    legend.position = c(0.85, 0.5),  # Moves the legend higher
+    legend.position = c(0.85, 0.5),
     legend.box = "horizontal"
   ) +
   labs(
@@ -93,7 +93,7 @@ ggplot(data_merged) +
     caption = "Data Source: Eurostat | Visualization by hdydenairn.github.io"
   )
 # Save Car Ownership 2022 plot
-ggsave("car_ownership_2022.png", width = 12, height = 8, dpi = 600)
+ggsave("car_ownership_2022.png", width = 8.9, height = 8, dpi = 300)
 
 # Car Ownership Change 2017 - 2022 ####
 
@@ -162,7 +162,6 @@ bin_colors <- c(
   "50 to 60" = "#FF1A1A"   # Darkest red
 )
 
-# Plot the categorized data
 ggplot(data_merged) +
   geom_sf(aes(fill = pct_category), color = "white") +
   scale_fill_manual(
@@ -172,11 +171,11 @@ ggplot(data_merged) +
   ) +
   coord_sf(xlim = c(-25, 52), ylim = c(35, 72)) +
   theme(
-    plot.title = element_text(hjust = 0.5, family = "econ", face = "bold"),
-    plot.subtitle = element_text(hjust = 0.5, family = "econ"),
-    plot.caption = element_text(hjust = 0.5, family = "econ", face = "italic"),
-    legend.title = element_text(family = "econ"),
-    legend.text = element_text(family = "econ"),
+    plot.title = element_text(hjust = 0.5, family = "econ", face = "bold", size = 60),
+    plot.subtitle = element_text(hjust = 0.5, family = "econ", size = 45),
+    plot.caption = element_text(hjust = 0.5, family = "econ", face = "italic", size = 35),
+    legend.title = element_text(family = "econ", size = 40),
+    legend.text = element_text(family = "econ", size = 35),
     legend.position = c(0.85, 0.6),
     panel.background = element_rect(fill = "lightgrey"),
     plot.background = element_rect(fill = "lightgrey"),
@@ -191,4 +190,4 @@ ggplot(data_merged) +
     caption = "Data Source: Eurostat | Visualization by hdydenairn.github.io"
   )
 # Save Car Ownership Change 2017-2022 plot
-ggsave("car_ownership_change_2017_2022.png", width = 12, height = 8, dpi = 600)
+ggsave("car_ownership_change_2017_2022.png", width = 8.9, height = 8, dpi = 300)
