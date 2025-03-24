@@ -92,7 +92,8 @@ ggplot(data_merged) +
     subtitle = "Number of Cars per 1000 Inhabitants",
     caption = "Data Source: Eurostat | Visualization by hdydenairn.github.io"
   )
-
+# Save Car Ownership 2022 plot
+ggsave("car_ownership_2022.png", width = 12, height = 8, dpi = 600)
 
 # Car Ownership Change 2017 - 2022 ####
 
@@ -152,13 +153,13 @@ showtext_auto()
 
 # Define light blue for negative, and progressively darker reds for positive
 bin_colors <- c(
-  "-10 to 0" = "#99CCFF",  # Light blue for decline
-  "0 to 10" = "#FF9999",   # Light red (same lightness as blue)
-  "10 to 20" = "#FF6666",  # Medium red
-  "20 to 30" = "#FF4D4D",  # Darker red
-  "30 to 40" = "#FF3333",  # Even darker red
-  "40 to 50" = "#FF1A1A",  # Deep red
-  "50 to 60" = "#FF0000"   # Darkest red
+  "-10 to 0" = "#AACCFF",  # Slightly deeper light blue (closer to light red)
+  "0 to 10" = "#FFB3B3",   # Softer light red, reducing the contrast
+  "10 to 20" = "#FF8080",  # Medium red
+  "20 to 30" = "#FF6666",  # Darker red
+  "30 to 40" = "#FF4D4D",  # Even darker red
+  "40 to 50" = "#FF3333",  # Deep red
+  "50 to 60" = "#FF1A1A"   # Darkest red
 )
 
 # Plot the categorized data
@@ -189,3 +190,5 @@ ggplot(data_merged) +
     subtitle = "Percentage Change in Cars per 1000 Inhabitants",
     caption = "Data Source: Eurostat | Visualization by hdydenairn.github.io"
   )
+# Save Car Ownership Change 2017-2022 plot
+ggsave("car_ownership_change_2017_2022.png", width = 12, height = 8, dpi = 600)
